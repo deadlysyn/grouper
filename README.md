@@ -12,7 +12,7 @@
 
 ## Overview
 
-![goliath grouper](https://github.com/deadlysyn/grouper/main/assets/grouper.png?raw=true)
+![goliath grouper](https://github.com/deadlysyn/grouper/blob/main/assets/grouper.png?raw=true)
 
 "It's kind of a big deal..."
 
@@ -33,7 +33,7 @@ TODO: link to blog
 Preferred deployment scenario, following the best practice of sandboxing
 services in dedicated accounts and using cross-account role assumption.
 
-![grouper architecture](https://github.com/deadlysyn/grouper/main/assets/grouper-arch.png?raw=true)
+![grouper architecture](https://github.com/deadlysyn/grouper/blob/main/assets/grouper-arch.png?raw=true)
 
 ### Prerequisites
 
