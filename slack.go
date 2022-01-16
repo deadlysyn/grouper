@@ -16,7 +16,6 @@ func slackNotify(msg string) error {
 	}
 
 	j := []byte(`{"text":"` + msg + `"}`)
-
 	res, err := http.Post(webhook, "application/json", bytes.NewBuffer(j))
 	if res != nil {
 		defer res.Body.Close()
