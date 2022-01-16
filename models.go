@@ -1,6 +1,8 @@
 package main
 
-import "github.com/aws/aws-sdk-go-v2/service/iam"
+import (
+	"github.com/aws/aws-sdk-go-v2/service/iam/types"
+)
 
 type apiRequest struct {
 	Group    string `json:"group"`
@@ -9,6 +11,11 @@ type apiRequest struct {
 }
 
 type userOutput struct {
-	User   *iam.GetUserOutput
-	Groups *iam.ListGroupsForUserOutput
+	User   *types.User
+	Groups []types.Group
 }
+
+// type userOutput struct {
+// 	User   *iam.GetUserOutput
+// 	Groups *iam.ListGroupsForUserOutput
+// }

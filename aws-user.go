@@ -28,8 +28,14 @@ func getUser(username string) (userOutput, error) {
 		return out, err
 	}
 
-	out.User = u
-	out.Groups = g
+	// iam.GetUserOutput{}
+	// iam.ListGroupsForUserOutput{}
+
+	// out.User = u
+	// out.Groups = g
+
+	out.User = u.User
+	out.Groups = g.Groups
 
 	return out, nil
 }

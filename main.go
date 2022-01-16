@@ -83,8 +83,10 @@ func getUserHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status": http.StatusOK,
 		"message": gin.H{
-			"user":   out.User.User,
-			"groups": out.Groups.Groups,
+			"user":   out.User,
+			"groups": out.Groups,
+			// "user":   out.User.User,
+			// "groups": out.Groups.Groups,
 		},
 	})
 }
