@@ -60,6 +60,8 @@ func getRequester(c *gin.Context) (apiRequest, string) {
 
 func isAdmin(key, requester string) (bool, error) {
 	var isAdmin bool
+	// "admin" group can manage all groups
+	adminGroup := os.Getenv("ADMIN_GROUP")
 
 	if hasValidKey(key, requester) {
 		g, err := getUserGroups(requester)
@@ -68,8 +70,7 @@ func isAdmin(key, requester string) (bool, error) {
 		}
 
 		for _, v := range g.Groups {
-			// "admin" group can manage all groups
-			if "admin" == *v.GroupName {
+			if adminGroup == *v.GroupName {
 				isAdmin = true
 				break
 			}
