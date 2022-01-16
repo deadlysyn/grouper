@@ -2,23 +2,22 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"io/ioutil"
 	"log"
 	"net/http"
-
-	"github.com/deadlysyn/retriever"
+	"os"
 )
 
 func slackNotify(msg string) error {
-	creds, err := retriever.Fetch()
-	if err != nil {
-		return err
+	webhook := os.Getenv("SLACK_WEBHOOK")
+	if len(webhook) == 0 {
+		return errors.New("SLACK_WEBHOOK is not defined")
 	}
 
-	// json.Marshal feels right, but causes invalid payload from slack
 	j := []byte(`{"text":"` + msg + `"}`)
 
-	res, err := http.Post(creds["SLACK_WEBHOOK"], "application/json", bytes.NewBuffer(j))
+	res, err := http.Post(webhook, "application/json", bytes.NewBuffer(j))
 	if res != nil {
 		defer res.Body.Close()
 		if res.StatusCode >= 400 {
