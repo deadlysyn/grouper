@@ -40,27 +40,143 @@ services in dedicated accounts and using cross-account role assumption.
 While all are not specific to grouper or strictly required, keep the following
 in mind when deploying grouper:
 
-TODO: describe why these are needed...
-
 #### Security controls
 
-VPN access (grouper is only available internally)
+Grouper is meant to be as lightweight as possible. One decision to accomplish
+that is allowing RO endpoints (e.g. get a list of groups) to be accessed
+without authentication. While RW endpoints (e.g. updating a group) do require
+authentication and authorization, there is likely no reason for this service
+to ever be exposed to the public Internet.
+
+Whether you lock it down using security groups, authenticated proxies,
+internal ALBs or other means is up to you. Just place it in a trust zone
+with adequate protections considering the role it plays.
+
+I've deployed it on a private VPC, behind an internal ALB, with a security
+group only allowing access from VPN. You don't have to be that paranoid,
+but it doesn't hurt!
 
 #### AWS CLI
 
-https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+[You need to have the AWS CLI installed and configured](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html).
+The `groupadd` script wraps aws-vault vs using the AWS CLI directly, but you
+still need a functional CLI to initially load credentials. AWS has excellent
+stand-alone installers and most OS distributions have packaged options
+(AUR, homebrew, etc). If you haven't done this before, be sure to install v2!
 
-#### aws-vault
+#### `aws-vault`
 
-https://github.com/99designs/aws-vault#installing
+If you routinely juggle a lot of different accounts and don't like having
+plaintext credentials lying around your disk (although I'm sure you have disk
+encryption enabled, so this is just about layers of protection at this point!),
+you need [aws-vault](https://github.com/99designs/aws-vault#installing).
 
-#### `curl` and `jq` utilities installed
+Technically you don't need the AWS CLI or aws-vault installed. You can simply
+curl the API! These are requirements of the `groupadd` convenience wrapper.
+That said, if you're doing other things which routinely use the AWS CLI, you
+should be using aws-vault!
 
-used by groupadd
+#### `curl` and `jq`
+
+While not a requirement for the API, `curl` and `jq` are used by the `groupadd`
+script. Who doesn't have these installed anyway? :-)
 
 ## Workflow
 
-TODO: add groups endpoints examples
+This is a lean microservice meant to accomplish one thing: Self-service AWS IAM
+management for teams. IAM is a big beast, so more specifically: Help individuals
+with AWS access navigate a group-based permissions scheme, and enable group
+members to self-serve adding new members.
+
+Based on that, we need discovery as well as management of group members. The
+following scenarios are the most common I've seen...
+
+### What groups exist?
+
+I wish all groups neatly conformed to the naming convention (because naming
+conventions solve everything!), but organic growth is a reality. This can be
+solved with good documentation... but documentation can be generated from good
+tooling (and anyone who grew up in the "API generation" can simply poke around
+and avoid managing more documentation).
+
+```console
+❯ http https://grouper/groups
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Length: 581
+Content-Type: application/json; charset=utf-8
+Date: Sat, 30 Oct 2021 20:56:40 GMT
+
+{
+  "message": {
+    "groups": [
+      {
+        "Arn": "arn:aws:iam::012345678901:group/foo",
+        "CreateDate": "2019-08-20T18:48:41Z",
+        "GroupId": "AGPAWSFUDZ6256EXAMPLE",
+        "GroupName": "foo",
+        "Path": "/"
+      },
+      {
+        "Arn": "arn:aws:iam::012345678901:group/bar",
+        "CreateDate": "2019-08-20T18:48:41Z",
+        "GroupId": "AGPAWSFUDZ622BEXAMPLE",
+        "GroupName": "bar",
+        "Path": "/"
+      },
+...
+```
+
+### Who do I ask for access?
+
+You've been pulled into a new team and even found a matching group, but aren't
+completely sure who to ask for access. You could ping your manager, but they're
+always in meetings. You could @team but you're really looking for @subteam.
+Lookup the group members yourself and start a slack thread with those who can
+directly help you!
+
+```console
+❯ http https://grouper/groups/foo
+HTTP/1.1 200 OK
+Connection: keep-alive
+Content-Type: application/json; charset=utf-8
+Date: Sun, 16 Jan 2022 23:11:24 GMT
+Transfer-Encoding: chunked
+
+{
+    "message": {
+        "group": {
+            "Arn": "arn:aws:iam::012345678901:group/foo",
+            "CreateDate": "2016-08-22T13:02:49Z",
+            "GroupId": "AGPAJGUTBU62VREXAMPLE",
+            "GroupName": "foo",
+            "Path": "/"
+        },
+        "members": [
+            {
+                "Arn": "arn:aws:iam::012345678901:user/some.user",
+                "CreateDate": "2018-06-04T21:49:03Z",
+                "PasswordLastUsed": "2022-01-14T16:40:57Z",
+                "Path": "/",
+                "PermissionsBoundary": null,
+                "Tags": null,
+                "UserId": "AIDAIDYYHCWNMGEXAMPLE",
+                "UserName": "some.user"
+            },
+            {
+                "Arn": "arn:aws:iam::012345678901:user/another.user",
+                "CreateDate": "2016-11-15T15:49:50Z",
+                "PasswordLastUsed": "2022-01-14T15:30:32Z",
+                "Path": "/",
+                "PermissionsBoundary": null,
+                "Tags": null,
+                "UserId": "AIDAIHXNI2F3E5EXAMPLE",
+                "UserName": "another.user"
+            },
+...
+```
+
+### What groups am I in again?
 
 Some times it's not obvious what groups you belong to... you can get a list
 of non-sensitive user information, including a list of all assigned groups:
@@ -77,17 +193,17 @@ Date: Sat, 30 Oct 2021 20:56:40 GMT
     "message": {
         "groups": [
             {
-                "Arn": "arn:aws:iam::012345678901:group/user",
+                "Arn": "arn:aws:iam::012345678901:group/foo",
                 "CreateDate": "2016-09-12T19:05:59Z",
                 "GroupId": "AGPAI5QY6GU5PAEXAMPLE",
-                "GroupName": "user",
+                "GroupName": "foo",
                 "Path": "/"
             },
             {
-                "Arn": "arn:aws:iam::012345678901:group/admin",
+                "Arn": "arn:aws:iam::012345678901:group/bar",
                 "CreateDate": "2016-08-22T13:02:49Z",
                 "GroupId": "AGPAJGUTBU62VZEXAMPLE",
-                "GroupName": "admin",
+                "GroupName": "bar",
                 "Path": "/"
             }
         ],
@@ -106,12 +222,17 @@ Date: Sat, 30 Oct 2021 20:56:40 GMT
 }
 ```
 
-**NOTE:** You can only manage groups you are a member of (members of the
-privileged `admin` group can manage all groups). Open an ITHELP ticket if you
-need new groups created (or new policies attached), added to groups team
-members are not currently part of, or group members removed.
+You can only manage groups you are a member of (members of the privileged
+`ADMIN_GROUP` can manage all groups). If you need new groups created, custom
+policies attached, added to groups team members are not currently part of,
+group members removed, etc. start with a conversation. If it's a common enough
+use case, submit a PR. :-)
 
-To add new team members to one of your groups, use the `groupadd` helper:
+To add new team members to one of your groups, use the `groupadd` helper
+This is only a convenience wrapper, you could just curl the API or use/build
+other options. Endpoints are documented in
+[Implementation Detail](https://github.com/deadlysyn/grouper/blob/main/docs/IMPLEMENTATION.md).
+
 
 ```console
 ❯ ./groupadd
@@ -125,7 +246,8 @@ USAGE: groupadd -g <IAM_GROUP> -m <IAM_USERNAME> [-c <CALLER_ID> -k <KEY_ID>]
 ```
 
 You only need `-g` and `-m`, by default the other arguments are
-auto-detected (requires properly configured AWS CLI and `aws-vault`):
+[auto-detected](#how-auto-detection-works) (requires properly configured AWS
+CLI and `aws-vault`):
 
 ```console
 ❯ ./groupadd -g testgroup -m some.user
@@ -133,17 +255,17 @@ auto-detected (requires properly configured AWS CLI and `aws-vault`):
   "message": {
     "groups": [
       {
-        "Arn": "arn:aws:iam::012345678901:group/user",
+        "Arn": "arn:aws:iam::012345678901:group/foo",
         "CreateDate": "2016-09-12T19:05:59Z",
         "GroupId": "AGPAI5QY6GU5PAEXAMPLE",
-        "GroupName": "user",
+        "GroupName": "foo",
         "Path": "/"
       },
       {
-        "Arn": "arn:aws:iam::012345678901:group/admin",
+        "Arn": "arn:aws:iam::012345678901:group/bar",
         "CreateDate": "2016-08-22T13:02:49Z",
         "GroupId": "AGPAJGUTBU62VZEXAMPLE",
-        "GroupName": "admin",
+        "GroupName": "bar",
         "Path": "/"
       },
       {
@@ -168,11 +290,6 @@ auto-detected (requires properly configured AWS CLI and `aws-vault`):
   "status": 201
 }
 ```
-
-If auto-detection fails, see [How Auto-Detection Works](#how-auto-detection-works).
-The additional options are there if you need to override. Look at
-`groupadd`, note it is just curling a REST API. Endpoints are documented in
-[Implementation Detail](https://github.com/deadlysyn/grouper/blob/main/docs/IMPLEMENTATION.md)
 
 # How Auto-Detection Works
 
