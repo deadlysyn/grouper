@@ -4,6 +4,10 @@
   - [Architecture](#architecture)
   - [Prerequisites](#prerequisites)
 - [Workflow](#workflow)
+  - [What groups exist?](#what-groups-exist)
+  - [Who do I ask for access?](#who-do-i-ask-for-access)
+  - [What groups am I in again?](#what-groups-am-i-in-again)
+  - [How do I add group members?](#how-do-i-add-group-members)
 - [How Auto-Detection Works](#how-auto-detection-works)
 - [Implementation Detail](https://github.com/deadlysyn/grouper/blob/main/docs/IMPLEMENTATION.md)
 - [Local Development](https://github.com/deadlysyn/grouper/blob/main/docs/DEV.md)
@@ -221,6 +225,8 @@ Date: Sat, 30 Oct 2021 20:56:40 GMT
     "status": 200
 }
 ```
+
+### How do I add group members?
 
 You can only manage groups you are a member of (members of the privileged
 `ADMIN_GROUP` can manage all groups). If you need new groups created, custom
