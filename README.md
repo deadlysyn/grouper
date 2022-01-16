@@ -6,7 +6,7 @@
 - [Workflow](#workflow)
   - [What groups exist?](#what-groups-exist)
   - [Who do I ask for access?](#who-do-i-ask-for-access)
-  - [What groups am I in again?](#what-groups-am-i-in-again)
+  - [What groups am I in?](#what-groups-am-i-in)
   - [How do I add group members?](#how-do-i-add-group-members)
 - [How Auto-Detection Works](#how-auto-detection-works)
 - [Implementation Detail](https://github.com/deadlysyn/grouper/blob/main/docs/IMPLEMENTATION.md)
@@ -180,7 +180,7 @@ Transfer-Encoding: chunked
 ...
 ```
 
-### What groups am I in again?
+### What groups am I in?
 
 Some times it's not obvious what groups you belong to... you can get a list
 of non-sensitive user information, including a list of all assigned groups:
