@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/iam"
@@ -100,9 +101,10 @@ func updateGroup(group, member, requester string) error {
 	}
 
 	var groupMember bool
+	// "admin" group can manage all groups
+	adminGroup := os.Getenv("ADMIN_GROUP")
 	for _, v := range g.Groups {
-		// "admin" group can manage all groups
-		if group == *v.GroupName || "admin" == *v.GroupName {
+		if adminGroup == *v.GroupName || group == *v.GroupName {
 			groupMember = true
 		}
 	}
@@ -111,11 +113,11 @@ func updateGroup(group, member, requester string) error {
 		return fmt.Errorf("%s is not a member of %s", requester, group)
 	}
 
-	i := iam.AddUserToGroupInput{
+	gi := iam.AddUserToGroupInput{
 		GroupName: aws.String(group),
 		UserName:  aws.String(member),
 	}
-	_, err = svc.AddUserToGroup(context.TODO(), &i)
+	_, err = svc.AddUserToGroup(context.TODO(), &gi)
 	if err != nil {
 		return err
 	}
@@ -123,6 +125,7 @@ func updateGroup(group, member, requester string) error {
 	msg := fmt.Sprintf("%s added %s to AWS IAM group %s", requester, member, group)
 	err = slackNotify(msg)
 	if err != nil {
+		// don't fail on webhook issue
 		log.Println(err.Error())
 	}
 
