@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -21,7 +21,7 @@ import (
 func getClient() (*iam.Client, error) {
 	role := os.Getenv("ASSUME_ROLE_ARN")
 	if len(role) == 0 {
-		return nil, fmt.Errorf("failed reading ASSUME_ROLE_ARN")
+		return nil, errors.New("failed reading ASSUME_ROLE_ARN")
 	}
 
 	cfg, err := config.LoadDefaultConfig(context.TODO())
