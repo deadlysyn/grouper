@@ -10,5 +10,6 @@ FROM alpine:latest
 RUN apk update
 WORKDIR /app
 COPY --from=0 /build/grouper ./
+ENV GIN_MODE=release
 EXPOSE 8080
 CMD ["./grouper"]
