@@ -30,7 +30,7 @@ With that in mind, if you're a member of an autonomous agile team and have
 AWS access required to do your job, one conclusion is that you should be able
 to grant team members the same access without friction. Grouper lets you do that.
 
-TODO: link to blog
+[Related blog post](https://deadlysyn.com/blog/posts/lean-aws-iam).
 
 ### Architecture
 
