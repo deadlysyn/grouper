@@ -11,6 +11,7 @@
   - [How do I add group members?](#how-do-i-add-group-members)
 - [How Auto-Detection Works](#how-auto-detection-works)
 - [Development](#development)
+- [Deployment](#deployment)
 - [FAQ](#faq)
 - [TODO](#todo)
 
@@ -380,6 +381,31 @@ IAM account admin ARN:
 ❯ ASSUME_ROLE_ARN="arn:aws:iam::012345678901:role/admin" aws-vault exec ops -- go run .
 ...
 ```
+
+## Deployment
+
+The provided [Dockerfile](https://github.com/deadlysyn/grouper/blob/main/Dockerfile)
+encapsulates all build steps, providing an image which can be pushed to your
+registry of choice (ECR, Docker Hub, Quay.io, etc) and ran atop your container
+orchestrator of choice (ECS, Kubernetes, etc).
+
+```console
+# ECR/ECS example
+❯ docker build -t grouper:latest .
+❯ docker tag grouper:latest 012345678901.dkr.ecr.region.amazonaws.com:latest
+❯ aws ecr get-login-password | docker login --username AWS --password-stdin 012345678901.dkr.ecr.region.amazonaws.com
+❯ docker push 012345678901.dkr.ecr.region.amazonaws.com/grouper:latest
+❯ aws ecs update-service --force-new-deployment --cluster your-ecs-cluster --service your-ecs-service
+```
+
+Configuration options:
+
+| Environment Variable | Default Value | Notes                                              |
+|----------------------|---------------|----------------------------------------------------|
+| ADMIN_GROUP          | ""            | Name of group in IAM account containing admins. Admins can add members to any group and delete members. |
+| ASSUME_ROLE_ARN      | ""            | ARN of role used by grouper for cross-account assumption. |
+| PORT                 | 8080          | Gin/service listen port. |
+| SLACK_WEBHOOK        | ""            | [Slack webhook](https://api.slack.com/messaging/webhooks) URL. If unset, events will simply not be sent to Slack. |
 
 ## FAQ
 
