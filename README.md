@@ -47,8 +47,8 @@ services in dedicated accounts and using cross-account role assumption.
 Grouper is meant to be as lightweight as possible. One decision to accomplish
 that is allowing RO endpoints (e.g. get a list of groups) to be accessed
 without authentication. While RW endpoints (e.g. updating a group) do require
-authentication and authorization, there is likely no reason for this service
-to ever be exposed to the Internet.
+[authentication and authorization](#authentication-and-authorization), there
+is likely no reason for this service to ever be exposed to the Internet.
 
 Whether you lock it down using security groups, authenticated proxies,
 internal ALBs or other means is up to you. Just place it in a trust zone
@@ -58,13 +58,69 @@ I've deployed it on a private VPC, behind an internal ALB, with a security
 group only allowing access from VPN. You don't have to be that paranoid,
 but it doesn't hurt!
 
+#### IAM Roles
+
+Grouper acts as an IAM administrator proxy, so you need appropriate roles and
+policies granting grouper IAM access. The exact configuration you choose will
+depend on context, but here's an example using ECS and cross account role
+assumption as a guide.
+
+In the account running grouper, ECS has "task" and "exec" roles. Attach the
+following policy to your "task" role, along with any other permissions your
+tasks need such as reading secrets (`012345678901` is the fictional account
+housing your managed IAM resources):
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "sts:AssumeRole",
+            "Resource": [
+                "arn:aws:iam::012345678901:role/grouper"
+            ]
+        }
+    ]
+}
+```
+
+This allows grouper tasks to assume the specified role in the IAM account.
+Create the `grouper` role in the IAM account. Adjust as needed, but the
+simplest approach would attach the `IAMFullAccess` AWS managed policy. Edit
+trust relationships and add the grouper account and task role principals
+(`09876543210` is the fictional account running your grouper tasks):
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::09876543210:root"
+      },
+      "Action": "sts:AssumeRole"
+    },
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::09876543210:role/your-grouper-task-role"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+```
+
 #### AWS CLI
 
 [You need to have the AWS CLI installed and configured](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html).
 The `groupadd` script wraps aws-vault vs using the AWS CLI directly, but you
 still need a functional CLI to initially load credentials. AWS has excellent
 stand-alone installers and most OS distributions have packaged options
-(AUR, homebrew, etc). If you haven't done this before, be sure to install v2!
+([AUR](https://aur.archlinux.org/packages/aws-cli-v2-bin), [homebrew](https://formulae.brew.sh/formula/awscli),
+etc).
 
 #### `aws-vault`
 
@@ -461,4 +517,3 @@ Important things to remember:
 ## TODO
 
 - Add tests
-- Document IAM bits
