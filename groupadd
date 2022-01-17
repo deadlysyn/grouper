@@ -5,7 +5,7 @@ set -eu
 PROFILE=${AWS_PROFILE:-main}
 VAULT="aws-vault exec $PROFILE --"
 # set this!
-SERVICE_URL="https://your.service.tld"
+SERVICE_URL="https://your.service.tld/api/v1"
 
 usage() {
   cat <<EOF

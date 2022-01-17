@@ -101,7 +101,7 @@ tooling (and anyone who grew up in the "API generation" can simply poke around
 and avoid managing more documentation).
 
 ```console
-❯ http https://grouper/groups
+❯ http https://grouper/api/v1/groups
 HTTP/1.1 200 OK
 Connection: keep-alive
 Content-Length: 581
@@ -137,7 +137,7 @@ Lookup the group members yourself and start a slack thread with those who can
 directly help you!
 
 ```console
-❯ http https://grouper/groups/foo
+❯ http https://grouper/api/v1/groups/foo
 HTTP/1.1 200 OK
 Connection: keep-alive
 Content-Type: application/json; charset=utf-8
@@ -183,7 +183,7 @@ Some times it's not obvious what groups you belong to... you can get a list
 of non-sensitive user information, including a list of all assigned groups:
 
 ```console
-❯ http https://grouper/users/some.user
+❯ http https://grouper/api/v1/users/some.user
 HTTP/1.1 200 OK
 Connection: keep-alive
 Content-Length: 581

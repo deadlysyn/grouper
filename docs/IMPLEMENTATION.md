@@ -1,5 +1,7 @@
 # Implementation Detail
 
+All endpoints beside `/healthz` prefixed by `/api/v1`.
+
 Endpoints:
 
 | Method | URI                      | Notes                                              |

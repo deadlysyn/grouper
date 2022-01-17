@@ -17,10 +17,14 @@ func main() {
 			"message": "OK",
 		})
 	})
-	r.GET("/groups", getGroupsHandler)
-	r.GET("/groups/:groupname", getGroupUsersHandler)
-	r.GET("/users/:username", getUserHandler)
-	r.POST("/users/:username/groups", postUserGroupsHandler)
+
+	v1 := r.Group("/api/v1")
+	{
+		v1.GET("/groups", getGroupsHandler)
+		v1.GET("/groups/:groupname", getGroupUsersHandler)
+		v1.GET("/users/:username", getUserHandler)
+		v1.POST("/users/:username/groups", postUserGroupsHandler)
+	}
 
 	// serves on :8080 unless PORT environment variable defined
 	err := r.Run()
