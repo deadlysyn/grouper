@@ -3,14 +3,14 @@
 - [Overview](#overview)
   - [Architecture](#architecture)
   - [Prerequisites](#prerequisites)
+  - [Endpoints](#endpoints)
 - [Workflow](#workflow)
   - [What groups exist?](#what-groups-exist)
   - [Who do I ask for access?](#who-do-i-ask-for-access)
   - [What groups am I in?](#what-groups-am-i-in)
   - [How do I add group members?](#how-do-i-add-group-members)
 - [How Auto-Detection Works](#how-auto-detection-works)
-- [Implementation Detail](https://github.com/deadlysyn/grouper/blob/main/docs/IMPLEMENTATION.md)
-- [Local Development](https://github.com/deadlysyn/grouper/blob/main/docs/DEV.md)
+- [Development](#development)
 - [FAQ](#faq)
 - [TODO](#todo)
 
@@ -81,6 +81,30 @@ should be using aws-vault!
 
 While not a requirement for the API, `curl` and `jq` are used by the `groupadd`
 script. Who doesn't have these installed anyway? :-)
+
+### Endpoints
+
+All endpoints beside `/healthz` prefixed by `/api/v1`.
+
+Endpoints:
+
+| Method | URI                      | Notes                                              |
+|--------|--------------------------|----------------------------------------------------|
+| GET    | /healthz                 | simple healthcheck                                 |
+| GET    | /groups                  | return list of IAM groups                          |
+| GET    | /groups/:groupname       | return list of users for specified IAM group       |
+| GET    | /users/:username         | return user/group detail for username              |
+| POST   | /users/:username/groups  | modify groups for username                         |
+
+`/users/:username/groups` payload:
+
+```json
+{
+  "caller_id": "$AWS_CALLER_ID",
+  "group": "$IAM_FRIENDLY_GROUP_NAME",
+  "key_id": "$AWS_ACCESS_KEY_ID"
+}
+```
 
 ## Workflow
 
@@ -294,7 +318,7 @@ CLI and `aws-vault`):
 }
 ```
 
-# How Auto-Detection Works
+## How Auto-Detection Works
 
 The `groupadd` helper script attempts to auto-detect AWS caller ID and access
 key ID to construct the API payload. This requires properly configured
@@ -339,6 +363,22 @@ override `AWS_PROFILE` when running `groupadd`:
 
 ```console
 ❯ AWS_PROFILE=foobarbaz ./groupadd -g testgroup -m some.user
+```
+
+## Development
+
+Grouper uses cross-account role assumption (allowing a service in one account
+to act as an IAM Administrator in another). The role used for that is
+specified in the `ASSUME_ROLE_ARN` environment variable.
+
+When testing locally, "assuming" you are someone with admin access to the IAM
+account (likely true if you are working on this service), cross-account
+assumption is not required. Simply use your normal aws-vault profile and the
+IAM account admin ARN:
+
+```console
+❯ ASSUME_ROLE_ARN="arn:aws:iam::012345678901:role/admin" aws-vault exec ops -- go run .
+...
 ```
 
 ## FAQ
