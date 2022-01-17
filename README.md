@@ -50,7 +50,7 @@ Grouper is meant to be as lightweight as possible. One decision to accomplish
 that is allowing RO endpoints (e.g. get a list of groups) to be accessed
 without authentication. While RW endpoints (e.g. updating a group) do require
 authentication and authorization, there is likely no reason for this service
-to ever be exposed to the public Internet.
+to ever be exposed to the Internet.
 
 Whether you lock it down using security groups, authenticated proxies,
 internal ALBs or other means is up to you. Just place it in a trust zone
@@ -234,7 +234,7 @@ policies attached, added to groups team members are not currently part of,
 group members removed, etc. start with a conversation. If it's a common enough
 use case, submit a PR. :-)
 
-To add new team members to one of your groups, use the `groupadd` helper
+To add new team members to one of your groups, use the `groupadd` helper.
 This is only a convenience wrapper, you could just curl the API or use/build
 other options. Endpoints are documented in
 [Implementation Detail](https://github.com/deadlysyn/grouper/blob/main/docs/IMPLEMENTATION.md).
@@ -304,7 +304,7 @@ key ID to construct the API payload. This requires properly configured
 AWS CLI and `aws-vault`.
 
 For AWS CLI, you must have `~/.aws/config` and `~/.aws/credentials` with
-entries for your main IAM account (see [architecture diagram](#architecture)]):
+entries for your main IAM account (see [architecture diagram](#architecture)):
 
 ```console
 ❯ cat ~/.aws/config
@@ -326,7 +326,7 @@ aws_secret_access_key = ...
 ❯ aws-vault list
 Profile                  Credentials              Sessions
 =======                  ===========              ========
-main                     main                      sts.GetSessionToken:5h6m32s
+main                     main                     sts.GetSessionToken:5h6m32s
 ```
 
 Then `groupadd` can use these for auto-detection:
@@ -352,9 +352,9 @@ override `AWS_PROFILE` when running `groupadd`:
 default) are loaded. If not, try `aws-vault add <profile_name>`. If you change
 profile names or credential configuration, you need to `aws-vault remove/add`.
 
-`Q:` `Unable to parse config file: ~/.aws/credentials
+`Q:` `Unable to parse config file: ~/.aws/credentials`
 
-`A:` Make sure you setup `~/.aws/credentials` using `aws configure`
+`A:` Make sure you setup `~/.aws/credentials` using `aws configure`.
 
 `Q:` `InvalidClientTokenId` or `The security token included in the request is invalid`.
 Manually running `aws iam list-access-keys` also fails.
@@ -371,7 +371,7 @@ output=json
 region=your-default-region
 mfa_serial=arn:aws:iam::012345678901:mfa/first.last
 
-[profile whatever]
+[profile main]
 role_arn=arn:aws:iam::012345678901:role/admin
 source_profile=default
 mfa_serial=arn:aws:iam::012345678901:mfa/first.last
