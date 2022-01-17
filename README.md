@@ -402,10 +402,10 @@ Configuration options:
 
 | Environment Variable | Default Value | Notes                                              |
 |----------------------|---------------|----------------------------------------------------|
-| ADMIN_GROUP          | ""            | Name of group in IAM account containing admins. Admins can add members to any group and delete members. |
-| ASSUME_ROLE_ARN      | ""            | ARN of role used by grouper for cross-account assumption. |
-| PORT                 | 8080          | Gin/service listen port. |
-| SLACK_WEBHOOK        | ""            | [Slack webhook](https://api.slack.com/messaging/webhooks) URL. If unset, events will simply not be sent to Slack. |
+| ADMIN_GROUP          | ""            | Name of group in IAM account containing admins. Admins can add members to any group and delete members. Required. |
+| ASSUME_ROLE_ARN      | ""            | ARN of role used by grouper for cross-account assumption. Required. |
+| PORT                 | 8080          | Gin/service listen port. Optional. |
+| SLACK_WEBHOOK        | ""            | [Slack webhook](https://api.slack.com/messaging/webhooks) URL. Optional. |
 
 ## FAQ
 
