@@ -30,7 +30,7 @@ With that in mind, if you're a member of an autonomous agile team and have
 AWS access required to do your job, one conclusion is that you should be able
 to grant team members the same access without friction. Grouper lets you do that.
 
-[Related blog post](https://deadlysyn.com/blog/posts/lean-aws-iam).
+[Related blog post.](https://deadlysyn.com/blog/posts/lean-aws-iam)
 
 ### Architecture
 
@@ -40,9 +40,6 @@ services in dedicated accounts and using cross-account role assumption.
 ![grouper architecture](https://github.com/deadlysyn/grouper/blob/main/assets/grouper-arch.png?raw=true)
 
 ### Prerequisites
-
-While all are not specific to grouper or strictly required, keep the following
-in mind when deploying grouper:
 
 #### Security controls
 
