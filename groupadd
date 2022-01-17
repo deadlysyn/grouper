@@ -1,0 +1,67 @@
+#!/bin/sh
+
+set -eu
+
+PROFILE=${AWS_PROFILE:-main}
+VAULT="aws-vault exec $PROFILE --"
+# set this!
+SERVICE_URL="https://your.service.tld"
+
+usage() {
+  cat <<EOF
+
+USAGE: $(basename $0) -g <IAM_GROUP> -m <IAM_USERNAME> [-c <CALLER_ID> -k <KEY_ID>]
+
+  -g  Friendly name of IAM group to update
+  -m  IAM username of group member to add
+  -c  User ARN of requester (only needed if auto-detection fails)
+  -k  AWS_ACCESS_KEY_ID of requestor (only needed if auto-detection fails)
+
+EOF
+  exit 1
+}
+
+for d in aws curl jq; do
+  if ! which "$d" >/dev/null 2>/dev/null; then
+    echo "$d is a required dependency"
+    exit 1
+  fi
+done
+
+CALLER_ID=""; GROUP=""; KEY_ID=""; MEMBER=""
+while getopts c:g:k:m: ARG; do
+  case "${ARG}" in
+    c) CALLER_ID="$OPTARG" ;;
+    g) GROUP="$OPTARG" ;;
+    k) KEY_ID="$OPTARG" ;;
+    m) MEMBER="$OPTARG" ;;
+    *) usage ;;
+  esac
+done
+
+if [ -z "$CALLER_ID" ]; then
+  CALLER_ID=$(aws sts get-caller-identity | jq -r .Arn)
+  if [ $? -ne 0 ] || [ -z "$CALLER_ID" ]; then
+    echo "CALLER_ID auto detection failed"
+    exit 1
+  fi
+fi
+
+if [ -z "$KEY_ID" ]; then
+  KEY_ID=$($VAULT aws iam list-access-keys | jq -r '.AccessKeyMetadata[0].AccessKeyId')
+  if [ $? -ne 0 ] || [ -z "$KEY_ID" ]; then
+    echo "KEY_ID auto detection failed"
+    exit 1
+  fi
+fi
+
+[ -z "$GROUP" ] || [ -z "$MEMBER" ] && usage
+
+curl -s -X POST "${SERVICE_URL}/users/${MEMBER}/groups" \
+  -H "Content-Type: application/json" -d @- <<EOF | jq .
+{
+  "caller_id": "$CALLER_ID",
+  "group": "$GROUP",
+  "key_id": "$KEY_ID"
+}
+EOF
