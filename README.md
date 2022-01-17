@@ -459,5 +459,4 @@ Important things to remember:
 ## TODO
 
 - Add tests
-- Fully encapsulate all build steps (more Makefile steps inside Dockerfile)
-- Update Terraform to include all IAM bits
+- Document IAM bits
