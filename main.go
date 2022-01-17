@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,6 +12,21 @@ import (
 func main() {
 	// default logger and recovery middleware
 	r := gin.Default()
+
+	// https://pkg.go.dev/github.com/gin-gonic/gin#section-readme
+	h := os.Getenv("TRUSTED_REQUEST_HEADER")
+	if len(h) > 0 {
+		r.TrustedPlatform = h
+	} else {
+		p := os.Getenv("TRUSTED_PROXIES")
+		var tp []string
+		for _, v := range strings.Split(p, " ") {
+			tp = append(tp, v)
+		}
+		if len(tp) > 0 {
+			r.SetTrustedProxies(tp)
+		}
+	}
 
 	r.GET("/healthz", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{

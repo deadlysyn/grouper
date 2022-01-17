@@ -400,12 +400,14 @@ orchestrator of choice (ECS, Kubernetes, etc).
 
 Configuration options:
 
-| Environment Variable | Default Value | Notes                                              |
-|----------------------|---------------|----------------------------------------------------|
-| ADMIN_GROUP          | ""            | Name of group in IAM account containing admins. Admins can add members to any group and delete members. Required. |
-| ASSUME_ROLE_ARN      | ""            | ARN of role used by grouper for cross-account assumption. Required. |
-| PORT                 | 8080          | Gin/service listen port. Optional. |
-| SLACK_WEBHOOK        | ""            | [Slack webhook](https://api.slack.com/messaging/webhooks) URL. Optional. |
+| Environment Variable   | Default Value | Notes                                              |
+|------------------------|---------------|----------------------------------------------------|
+| ADMIN_GROUP            | ""            | Name of group in IAM account containing admins. Admins can add members to any group and delete members. Required. |
+| ASSUME_ROLE_ARN        | ""            | ARN of role used by grouper for cross-account assumption. Required. |
+| PORT                   | 8080          | Gin/service listen port. Optional. |
+| SLACK_WEBHOOK          | ""            | [Slack webhook](https://api.slack.com/messaging/webhooks) URL. Optional. |
+| TRUSTED_PROXIES        | ""            | Spaced delimited list of v4/v6 IPs or CIDR ranges. See [this](https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies). Optional. |
+| TRUSTED_REQUEST_HEADER | ""            | HTTP header name holding client IP. See [this](https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies). Optional. |
 
 ## FAQ
 
