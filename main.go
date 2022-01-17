@@ -89,8 +89,6 @@ func getUserHandler(c *gin.Context) {
 		"message": gin.H{
 			"user":   out.User,
 			"groups": out.Groups,
-			// "user":   out.User.User,
-			// "groups": out.Groups.Groups,
 		},
 	})
 }
@@ -122,8 +120,8 @@ func postUserGroupsHandler(c *gin.Context) {
 		c.JSON(http.StatusCreated, gin.H{
 			"status": http.StatusCreated,
 			"message": gin.H{
-				"user":   out.User.User,
-				"groups": out.Groups.Groups,
+				"user":   out.User,
+				"groups": out.Groups,
 			},
 		})
 	} else {

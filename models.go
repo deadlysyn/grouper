@@ -14,8 +14,3 @@ type userOutput struct {
 	User   *types.User
 	Groups []types.Group
 }
-
-// type userOutput struct {
-// 	User   *iam.GetUserOutput
-// 	Groups *iam.ListGroupsForUserOutput
-// }
