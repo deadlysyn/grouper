@@ -1,0 +1,10 @@
+.envrc
+.git
+.secrets
+Dockerfile
+LICENSE
+Makefile
+README.md
+assets
+groupadd
+terraform
