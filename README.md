@@ -47,8 +47,8 @@ services in dedicated accounts and using cross-account role assumption.
 Grouper is meant to be as lightweight as possible. One decision to accomplish
 that is allowing RO endpoints (e.g. get a list of groups) to be accessed
 without authentication. While RW endpoints (e.g. updating a group) do require
-[authentication and authorization](#authentication-and-authorization), there
-is likely no reason for this service to ever be exposed to the Internet.
+authentication and authorization (see "Access Keys" below), there is likely no
+reason for this service to ever be exposed to the Internet.
 
 Whether you lock it down using security groups, authenticated proxies,
 internal ALBs or other means is up to you. Just place it in a trust zone
