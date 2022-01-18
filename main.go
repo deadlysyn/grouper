@@ -145,7 +145,7 @@ func getUserHandler(c *gin.Context) {
 	})
 }
 
-// POST endpoints
+// PUT endpoints
 
 func putUserGroupsHandler(c *gin.Context) {
 	username := c.Param("username")
