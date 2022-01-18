@@ -520,7 +520,6 @@ Important things to remember:
 
 - You need to specify `mfa_serial` for each profile (not just the sourced profile).
 - You need matching `~/.aws/credentials` entries
-- Plain-text credentials can be removed once you `aws-vault add ...`
 
 ## TODO
 
