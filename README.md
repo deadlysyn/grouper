@@ -37,6 +37,7 @@ to grant team members the same access without friction. Grouper lets you do that
 
 Preferred deployment scenario, following the best practice of sandboxing
 services in dedicated accounts and using cross-account role assumption.
+See [IAM Roles](#iam-roles).
 
 ![grouper architecture](https://github.com/deadlysyn/grouper/blob/main/assets/grouper-arch.png?raw=true)
 
