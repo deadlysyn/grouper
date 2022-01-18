@@ -58,6 +58,24 @@ I've deployed it on a private VPC, behind an internal ALB, with a security
 group only allowing access from VPN. You don't have to be that paranoid,
 but it doesn't hurt!
 
+#### Access Keys
+
+**IMPORTANT NOTE:** While access keys themselves are not transmitted over
+the wire, the key IDs should be considered sensitive. I configure grouper's
+ALB to only accept HTTPS traffic (no HTTP redirect) as an extra precaution
+to ensure key IDs never transit the network in plaintext.
+
+Calls which modify resources require authorization. To avoid the need for
+an external identity source, AWS access keys are used. This means you need
+at least one access key associated with your account and configured locally
+to be able to modify resources.
+
+The API payload for `PUT`, `POST` or `DELETE` operations contains the caller
+ID (user ARN) and access key ID. Since the caller ID could be easily spoofed,
+the key ID is used as a "shared secret". You assert who you are with the
+user ARN, and grouper verifies that identity by confirming the provided key
+ID is actually associated with the specified user ARN.
+
 #### IAM Roles
 
 Grouper acts as an IAM administrator proxy, so you need appropriate roles and
