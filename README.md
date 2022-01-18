@@ -2,7 +2,7 @@
 
 - [Overview](#overview)
   - [Architecture](#architecture)
-  - [Prerequisites](#prerequisites)
+  - [Requirements](#requirements)
   - [Endpoints](#endpoints)
 - [Workflow](#workflow)
   - [What groups exist?](#what-groups-exist)
@@ -40,7 +40,7 @@ services in dedicated accounts and using cross-account role assumption.
 
 ![grouper architecture](https://github.com/deadlysyn/grouper/blob/main/assets/grouper-arch.png?raw=true)
 
-### Prerequisites
+### Requirements
 
 #### Security controls
 
