@@ -131,3 +131,28 @@ func updateGroup(group, member, requester string) error {
 
 	return nil
 }
+
+func deleteGroupUser(groupname, username, requester string) error {
+	svc, err := getClient()
+	if err != nil {
+		return err
+	}
+
+	gi := iam.RemoveUserFromGroupInput{
+		GroupName: aws.String(groupname),
+		UserName:  aws.String(username),
+	}
+	_, err = svc.RemoveUserFromGroup(context.TODO(), &gi)
+	if err != nil {
+		return err
+	}
+
+	msg := fmt.Sprintf("%s removed %s from AWS IAM group %s", requester, username, groupname)
+	err = slackNotify(msg)
+	if err != nil {
+		// don't fail on webhook issue
+		log.Println(err.Error())
+	}
+
+	return nil
+}
