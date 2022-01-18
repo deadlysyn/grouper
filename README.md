@@ -145,20 +145,20 @@ All endpoints beside `/healthz` prefixed by `/api/v1`.
 
 Endpoints:
 
-| Method | URI                      | Notes                                              |
-|--------|--------------------------|----------------------------------------------------|
-| GET    | /healthz                 | simple healthcheck                                 |
-| GET    | /groups                  | return list of IAM groups                          |
-| GET    | /groups/:groupname       | return list of users for specified IAM group       |
-| GET    | /users/:username         | return user/group detail for username              |
-| POST   | /users/:username/groups  | modify groups for username                         |
+| Method | URI                                | Notes                                    |
+|--------|------------------------------------|------------------------------------------|
+| GET    | /healthz                           | simple healthcheck                       |
+| GET    | /groups                            | return list of groups                    |
+| GET    | /groups/:groupname                 | return list of users for specified group |
+| GET    | /users/:username                   | return user/group detail for username    |
+| PUT    | /groups/:groupname/users/:username | add user to group                        |
+| DELETE | /groups/:groupname/users/:username | remove user from group. admins only.     |
 
-`/users/:username/groups` payload:
+`PUT` and `DELETE` payload:
 
 ```json
 {
   "caller_id": "$AWS_CALLER_ID",
-  "group": "$IAM_FRIENDLY_GROUP_NAME",
   "key_id": "$AWS_ACCESS_KEY_ID"
 }
 ```
