@@ -37,11 +37,11 @@ func main() {
 
 	v1 := r.Group("/api/v1")
 	{
-		v1.DELETE("/groups/:groupname/users/:username", deleteGroupUserHandler)
 		v1.GET("/groups", getGroupsHandler)
 		v1.GET("/groups/:groupname", getGroupUsersHandler)
 		v1.GET("/users/:username", getUserHandler)
-		v1.POST("/users/:username/groups/:groupname", postUserGroupsHandler)
+		v1.PUT("/groups/:groupname/users/:username", putUserGroupsHandler)
+		v1.DELETE("/groups/:groupname/users/:username", deleteGroupUserHandler)
 	}
 
 	// serves on :8080 unless PORT environment variable defined
@@ -147,7 +147,7 @@ func getUserHandler(c *gin.Context) {
 
 // POST endpoints
 
-func postUserGroupsHandler(c *gin.Context) {
+func putUserGroupsHandler(c *gin.Context) {
 	username := c.Param("username")
 	groupname := c.Param("groupname")
 	req, requester := getRequester(c)
