@@ -81,7 +81,7 @@ ID is actually associated with the specified user ARN.
 Grouper acts as an IAM administrator proxy, so you need appropriate roles and
 policies granting grouper IAM access. The exact configuration you choose will
 depend on context, but here's an example using ECS and cross account role
-assumption as a guide.
+assumption...
 
 In the account running grouper, ECS has "task" and "exec" roles. Attach the
 following policy to your "task" role, along with any other permissions your
@@ -134,9 +134,9 @@ trust relationships and add the grouper account and task role principals
 #### AWS CLI
 
 [You need to have the AWS CLI installed and configured](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html).
-The `groupadd` script wraps aws-vault vs using the AWS CLI directly, but you
+The `groupadd` script wraps `aws-vault` vs using the AWS CLI directly, but you
 still need a functional CLI to initially load credentials. AWS has excellent
-stand-alone installers and most OS distributions have packaged options
+standalone installers and most OS distributions have packaged options
 ([AUR](https://aur.archlinux.org/packages/aws-cli-v2-bin), [homebrew](https://formulae.brew.sh/formula/awscli),
 etc).
 
@@ -147,10 +147,10 @@ plaintext credentials lying around your disk (although I'm sure you have disk
 encryption enabled, so this is just about layers of protection at this point!),
 you need [aws-vault](https://github.com/99designs/aws-vault#installing).
 
-Technically you don't need the AWS CLI or aws-vault installed. You can simply
+Technically you don't need the AWS CLI or `aws-vault` installed. You can simply
 curl the API! These are requirements of the `groupadd` convenience wrapper.
 That said, if you're doing other things which routinely use the AWS CLI, you
-should be using aws-vault!
+should be using `aws-vault`!
 
 #### `curl` and `jq`
 
@@ -183,21 +183,16 @@ Endpoints:
 
 ## Workflow
 
-This is a lean microservice meant to accomplish one thing: Self-service AWS IAM
-management for teams. IAM is a big beast, so more specifically: Help individuals
-with AWS access navigate a group-based permissions scheme, and enable group
-members to self-serve adding new members.
-
-Based on that, we need discovery as well as management of group members. The
-following scenarios are the most common I've seen...
+This is a lean microservice meant to help individuals with AWS access navigate
+a group-based permissions scheme, and enable group members to self-serve
+adding new members. The following scenarios are the most common...
 
 ### What groups exist?
 
 I wish all groups neatly conformed to the naming convention (because naming
 conventions solve everything!), but organic growth is a reality. This can be
-solved with good documentation... but documentation can be generated from good
-tooling (and anyone who grew up in the "API generation" can simply poke around
-and avoid managing more documentation).
+solved with good documentation... and documentation can be generated from
+good tooling (self-discovery might even avoid managing more documentation).
 
 ```console
 ❯ http https://grouper/api/v1/groups
@@ -232,8 +227,8 @@ Date: Sat, 30 Oct 2021 20:56:40 GMT
 You've been pulled into a new team and even found a matching group, but aren't
 completely sure who to ask for access. You could ping your manager, but they're
 always in meetings. You could @team but you're really looking for @subteam.
-Lookup the group members yourself and start a slack thread with those who can
-directly help you!
+Find group members yourself and start a slack thread with those who can
+directly help you:
 
 ```console
 ❯ http https://grouper/api/v1/groups/foo
@@ -327,14 +322,11 @@ Date: Sat, 30 Oct 2021 20:56:40 GMT
 You can only manage groups you are a member of (members of the privileged
 `ADMIN_GROUP` can manage all groups). If you need new groups created, custom
 policies attached, added to groups team members are not currently part of,
-group members removed, etc. start with a conversation. If it's a common enough
-use case, submit a PR. :-)
+etc. start with a conversation. If it's a common enough use case, submit a PR. :-)
 
 To add new team members to one of your groups, use the `groupadd` helper.
-This is only a convenience wrapper, you could just curl the API or use/build
-other options. Endpoints are documented in
-[Implementation Detail](https://github.com/deadlysyn/grouper/blob/main/docs/IMPLEMENTATION.md).
-
+This is only a convenience wrapper, you could just curl the API or build
+other options.
 
 ```console
 ❯ ./groupadd
@@ -442,14 +434,12 @@ override `AWS_PROFILE` when running `groupadd`:
 
 ## Development
 
-Grouper uses cross-account role assumption (allowing a service in one account
-to act as an IAM Administrator in another). The role used for that is
+Grouper uses cross-account role assumption. The role used for that is
 specified in the `ASSUME_ROLE_ARN` environment variable.
 
 When testing locally, "assuming" you are someone with admin access to the IAM
-account (likely true if you are working on this service), cross-account
-assumption is not required. Simply use your normal aws-vault profile and the
-IAM account admin ARN:
+account (likely true if you are working on this service), simply use your
+normal `aws-vault` profile and the IAM account admin ARN:
 
 ```console
 ❯ ASSUME_ROLE_ARN="arn:aws:iam::012345678901:role/admin" aws-vault exec ops -- go run .
