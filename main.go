@@ -41,7 +41,7 @@ func main() {
 		v1.GET("/groups", getGroupsHandler)
 		v1.GET("/groups/:groupname", getGroupUsersHandler)
 		v1.GET("/users/:username", getUserHandler)
-		v1.POST("/users/:username/groups", postUserGroupsHandler)
+		v1.POST("/users/:username/groups/:groupname", postUserGroupsHandler)
 	}
 
 	// serves on :8080 unless PORT environment variable defined
@@ -154,15 +154,11 @@ func getUserHandler(c *gin.Context) {
 
 func postUserGroupsHandler(c *gin.Context) {
 	username := c.Param("username")
+	groupname := c.Param("groupname")
 	req, requester := getRequester(c)
 
-	if len(req.Group) == 0 {
-		handleError(c, http.StatusBadRequest, "invalid request")
-		return
-	}
-
 	if hasValidKey(req.KeyID, requester) {
-		err := updateGroup(req.Group, username, requester)
+		err := updateGroup(groupname, username, requester)
 		if err != nil {
 			handleError(c, http.StatusBadGateway, err.Error())
 			return
