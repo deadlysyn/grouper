@@ -89,7 +89,7 @@ func getUserGroups(username string) (*iam.ListGroupsForUserOutput, error) {
 	return g, nil
 }
 
-func updateGroup(group, member, requester string) error {
+func addGroupUser(groupname, username, requester string) error {
 	svc, err := getClient()
 	if err != nil {
 		return err
@@ -104,25 +104,25 @@ func updateGroup(group, member, requester string) error {
 	// "admin" group can manage all groups
 	adminGroup := os.Getenv("ADMIN_GROUP")
 	for _, v := range g.Groups {
-		if adminGroup == *v.GroupName || group == *v.GroupName {
+		if adminGroup == *v.GroupName || groupname == *v.GroupName {
 			groupMember = true
 		}
 	}
 
 	if !groupMember {
-		return fmt.Errorf("%s is not a member of %s", requester, group)
+		return fmt.Errorf("%s is not a member of %s", requester, groupname)
 	}
 
 	gi := iam.AddUserToGroupInput{
-		GroupName: aws.String(group),
-		UserName:  aws.String(member),
+		GroupName: aws.String(groupname),
+		UserName:  aws.String(username),
 	}
 	_, err = svc.AddUserToGroup(context.TODO(), &gi)
 	if err != nil {
 		return err
 	}
 
-	msg := fmt.Sprintf("%s added %s to AWS IAM group %s", requester, member, group)
+	msg := fmt.Sprintf("%s added %s to AWS IAM group %s", requester, username, groupname)
 	err = slackNotify(msg)
 	if err != nil {
 		// don't fail on webhook issue

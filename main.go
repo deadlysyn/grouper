@@ -158,7 +158,7 @@ func postUserGroupsHandler(c *gin.Context) {
 	req, requester := getRequester(c)
 
 	if hasValidKey(req.KeyID, requester) {
-		err := updateGroup(groupname, username, requester)
+		err := addGroupUser(groupname, username, requester)
 		if err != nil {
 			handleError(c, http.StatusBadGateway, err.Error())
 			return
