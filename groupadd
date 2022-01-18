@@ -57,7 +57,7 @@ fi
 
 [ -z "$GROUP" ] || [ -z "$MEMBER" ] && usage
 
-curl -s -X POST "${SERVICE_URL}/users/${MEMBER}/groups/${GROUP}" \
+curl -s -X PUT "${SERVICE_URL}/groups/${GROUP}/users/${MEMBER}" \
   -H "Content-Type: application/json" -d @- <<EOF | jq .
 {
   "caller_id": "$CALLER_ID",
