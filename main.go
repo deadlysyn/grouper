@@ -65,11 +65,6 @@ func deleteGroupUserHandler(c *gin.Context) {
 	username := c.Param("username")
 
 	req, requester := getRequester(c)
-	if len(req.Group) == 0 {
-		handleError(c, http.StatusBadRequest, "invalid request")
-		return
-	}
-
 	// only "admin" group can delete
 	if isAdmin(req.KeyID, requester) {
 		err := deleteGroupUser(groupname, username, requester)
