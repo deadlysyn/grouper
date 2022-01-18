@@ -37,6 +37,7 @@ func main() {
 
 	v1 := r.Group("/api/v1")
 	{
+		v1.DELETE("/groups/:groupname/users/:username", deleteGroupUserHandler)
 		v1.GET("/groups", getGroupsHandler)
 		v1.GET("/groups/:groupname", getGroupUsersHandler)
 		v1.GET("/users/:username", getUserHandler)
@@ -55,6 +56,45 @@ func handleError(c *gin.Context, status int, msg string) {
 		"status":  status,
 		"message": msg,
 	})
+}
+
+// DELETE endpoints
+
+func deleteGroupUserHandler(c *gin.Context) {
+	groupname := c.Param("groupname")
+	username := c.Param("username")
+
+	req, requester := getRequester(c)
+	if len(req.Group) == 0 {
+		handleError(c, http.StatusBadRequest, "invalid request")
+		return
+	}
+
+	// only "admin" group can delete
+	if isAdmin(req.KeyID, requester) {
+		err := deleteGroupUser(groupname, username, requester)
+		if err != nil {
+			handleError(c, http.StatusBadGateway, err.Error())
+			return
+		}
+
+		out, err := getGroupUsers(groupname)
+		if err != nil {
+			handleError(c, http.StatusBadGateway, err.Error())
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"status": http.StatusOK,
+			"message": gin.H{
+				"group":   out.Group,
+				"members": out.Users,
+			},
+		})
+	} else {
+		handleError(c, http.StatusForbidden, "permission denied")
+		return
+	}
 }
 
 // GET endpoints
